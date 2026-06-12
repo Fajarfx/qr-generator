@@ -31,9 +31,9 @@
 
         .qr-container {
             background: white;
-            padding: 18px;
+            padding: 16px;
             border: 2px solid #1e3a8a;
-            border-radius: 16px;
+            border-radius: 14px;
             box-shadow: 0 10px 15px -3px rgb(30 58 138 / 0.1);
             display: inline-block;
         }
@@ -75,17 +75,18 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
+            gap: 6px;
         }
 
         .text-above, .text-below {
             font-weight: 700;
             color: #1e2937;
             text-align: center;
-            letter-spacing: 0.5px;
+            white-space: pre-wrap;
+            word-break: break-word;
         }
 
-        /* Full Background Watermark - Banyak & Kecil */
+        /* Full Background Watermark */
         .bg-watermark {
             position: fixed;
             top: 0;
@@ -95,7 +96,7 @@
             z-index: 0;
             pointer-events: none;
             overflow: hidden;
-            opacity: 0.065;
+            opacity: 0.06;
         }
 
         .bg-watermark span {
@@ -109,6 +110,20 @@
             user-select: none;
         }
 
+        .size-btn {
+            padding: 6px 14px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 9999px;
+            transition: all 0.2s;
+        }
+        
+        .size-btn.active {
+            background-color: #1e3a8a;
+            color: white;
+            border-color: #1e3a8a;
+        }
+
         .footer {
             font-size: 0.75rem;
             color: #64748b;
@@ -119,7 +134,7 @@
         @media print {
             @page {
                 size: auto;
-                margin: 8mm;
+                margin: 5mm;
             }
 
             body * {
@@ -137,17 +152,16 @@
                 width: 100%;
                 display: flex;
                 justify-content: center;
-                align-items: center;
             }
 
             .qr-container {
-                padding: 8px !important;
+                padding: 6px !important;
                 border: 1.5px solid #1e3a8a !important;
             }
 
             #qrcode canvas {
-                width: 155px !important;
-                height: 155px !important;
+                width: 125px !important;
+                height: 125px !important;
             }
 
             .text-above, .text-below {
@@ -155,7 +169,7 @@
                 margin: 2px 0 !important;
             }
 
-            .no-print, .bg-watermark {
+            .bg-watermark, .no-print {
                 display: none !important;
             }
         }
@@ -163,23 +177,21 @@
 </head>
 <body class="bg-slate-100">
     
-    <!-- Full Background Watermark Team C Conveyor (banyak & kecil) -->
+    <!-- Full Background Watermark -->
     <div class="bg-watermark" id="bgWatermark"></div>
 
     <div class="max-w-5xl mx-auto p-6 relative z-10">
         
-        <!-- Header Industrial -->
+        <!-- Header -->
         <div class="industrial-header rounded-3xl px-8 py-6 mb-8 text-white">
             <div class="flex items-center justify-between">
                 <div>
                     <h1 class="text-3xl font-display tracking-tight">QR CODE</h1>
                     <p class="text-blue-200 mt-1 text-sm font-medium">TIM C CONVEYOR</p>
                 </div>
-                <div class="flex items-center gap-3">
-                    <div class="px-4 py-2 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center gap-2 text-sm">
-                        <i class="fa-solid fa-industry"></i>
-                        <span class="font-semibold">Team C</span>
-                    </div>
+                <div class="px-4 py-2 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center gap-2 text-sm">
+                    <i class="fa-solid fa-industry"></i>
+                    <span class="font-semibold">Team C</span>
                 </div>
             </div>
         </div>
@@ -194,20 +206,19 @@
                     </div>
                     <div>
                         <h2 class="font-bold text-xl text-slate-800">Input Data</h2>
-                        <p class="text-xs text-slate-500 -mt-0.5">Isi data untuk QR Code</p>
                     </div>
                 </div>
 
-                <!-- Input Teks (Lebih tinggi + kosong) -->
-                <div class="mb-6">
+                <!-- Input Teks -->
+                <div class="mb-5">
                     <label class="label-text block mb-1.5">INPUT TEKS</label>
                     <input id="inputTeks" type="text" 
                            class="input-field w-full px-4 py-[17px] rounded-2xl text-lg font-semibold bg-white"
                            placeholder="ops........." oninput="generateQR()">
                 </div>
 
-                <!-- Teks di Atas QR (Kosong) -->
-                <div class="mb-5">
+                <!-- Teks di Atas QR -->
+                <div class="mb-4">
                     <label class="label-text block mb-1.5">TEKS DI ATAS QR</label>
                     <input id="teksAtas" type="text" 
                            class="input-field w-full px-4 py-3 rounded-2xl bg-white"
@@ -215,37 +226,36 @@
                 </div>
 
                 <!-- Teks di Bawah QR -->
-                <div class="mb-6">
+                <div class="mb-5">
                     <label class="label-text block mb-1.5">TEKS DI BAWAH QR</label>
                     <input id="teksBawah" type="text" 
                            class="input-field w-full px-4 py-3 rounded-2xl bg-white"
                            placeholder="ops atau missort..." oninput="generateQR()">
                 </div>
 
-                <!-- Upload Logo -->
-                <div>
-                    <label class="label-text block mb-2">LOGO DI TENGAH QR (OPSIONAL)</label>
+                <!-- Ukuran Teks -->
+                <div class="mb-2">
+                    <label class="label-text block mb-2">UKURAN TEKS</label>
                     
-                    <div class="flex gap-3">
-                        <label class="flex-1 cursor-pointer">
-                            <div class="border-2 border-dashed border-slate-300 hover:border-blue-900 transition-colors rounded-2xl px-4 py-4 text-center bg-slate-50">
-                                <div class="flex flex-col items-center">
-                                    <i class="fa-solid fa-upload text-slate-400 text-lg mb-1"></i>
-                                    <span class="text-sm font-medium text-slate-600">Upload Logo</span>
-                                </div>
-                            </div>
-                            <input id="logoInput" type="file" accept="image/*" class="hidden" onchange="handleLogoUpload(event)">
-                        </label>
+                    <div class="flex gap-2">
+                        <button onclick="setTextSize('kecil')" id="btnKecil"
+                                class="size-btn flex-1 border border-slate-300 text-slate-600 hover:bg-slate-50 active">Kecil</button>
                         
-                        <button onclick="removeLogo()" 
-                                class="px-5 border-2 border-slate-300 hover:bg-slate-100 rounded-2xl text-slate-600 flex items-center justify-center transition-colors">
-                            <i class="fa-solid fa-trash text-sm"></i>
-                        </button>
+                        <button onclick="setTextSize('sedang')" id="btnSedang"
+                                class="size-btn flex-1 border border-slate-300 text-slate-600 hover:bg-slate-50">Sedang</button>
+                        
+                        <button onclick="setTextSize('besar')" id="btnBesar"
+                                class="size-btn flex-1 border border-slate-300 text-slate-600 hover:bg-slate-50">Besar</button>
                     </div>
                     
-                    <div id="logoStatus" class="hidden mt-2.5 px-3 py-2 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-2xl text-xs flex items-center gap-2">
-                        <i class="fa-solid fa-check-circle"></i>
-                        <span id="logoFileName" class="font-medium"></span>
+                    <!-- Range Slider -->
+                    <div class="mt-3">
+                        <input type="range" id="textSizeSlider" min="10" max="52" step="1" value="14"
+                               class="w-full accent-blue-900" oninput="setTextSizeFromSlider()">
+                        <div class="flex justify-between text-[10px] text-slate-400 mt-0.5">
+                            <span>Kecil</span>
+                            <span>Sangat Besar</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -265,12 +275,12 @@
                 </div>
 
                 <!-- Preview Area -->
-                <div class="flex justify-center items-center min-h-[360px] bg-white rounded-3xl p-8 border border-slate-200" id="previewContainer">
+                <div class="flex justify-center items-center min-h-[340px] bg-white rounded-3xl p-8 border border-slate-200" id="previewContainer">
                     <div id="print-area">
                         <div class="qr-wrapper" id="qrWrapper">
                             
                             <!-- Teks Atas -->
-                            <div id="textAbove" class="text-above text-[15px] hidden px-4"></div>
+                            <div id="textAbove" class="text-above text-[14px] hidden px-2"></div>
                             
                             <!-- QR Code -->
                             <div class="qr-container">
@@ -278,7 +288,7 @@
                             </div>
                             
                             <!-- Teks Bawah -->
-                            <div id="textBelow" class="text-below text-[15px] hidden px-4"></div>
+                            <div id="textBelow" class="text-below text-[14px] hidden px-2"></div>
                             
                         </div>
                     </div>
@@ -298,6 +308,50 @@
                         <span>Download PNG</span>
                     </button>
                 </div>
+
+                <!-- Tombol Preview Gabungan -->
+                <div class="mt-4">
+                    <button onclick="showCombinedPreview()" 
+                            class="w-full border-2 border-blue-900 text-blue-900 hover:bg-blue-50 font-semibold py-3 rounded-2xl flex items-center justify-center gap-2 transition-colors">
+                        <i class="fa-solid fa-images"></i>
+                        <span>Lihat Hasil Gabungan (QR + Teks)</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Combined Preview Section -->
+        <div id="combinedPreviewSection" class="hidden mt-6 section-card rounded-3xl p-7">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-check-circle text-emerald-600"></i>
+                    <span>Hasil Gabungan (QR + Teks)</span>
+                </h3>
+                <button onclick="hideCombinedPreview()" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="flex justify-center bg-slate-50 rounded-2xl p-6">
+                <canvas id="combinedCanvas" class="border border-slate-200 rounded-xl"></canvas>
+            </div>
+
+            <div class="flex gap-3 mt-5">
+                <button onclick="downloadCombined()" 
+                        class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-2xl flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-download"></i>
+                    <span>Download</span>
+                </button>
+                <button onclick="printCombined()" 
+                        class="flex-1 border-2 border-emerald-600 text-emerald-700 hover:bg-emerald-50 font-semibold py-3 rounded-2xl flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-print"></i>
+                    <span>Print</span>
+                </button>
+                <button onclick="openCombinedInNewTab()" 
+                        class="flex-1 border-2 border-slate-400 text-slate-600 hover:bg-slate-50 font-semibold py-3 rounded-2xl flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-external-link-alt"></i>
+                    <span>Buka di Tab Baru</span>
+                </button>
             </div>
         </div>
 
@@ -309,27 +363,22 @@
 
     <script>
         let qrcodeInstance = null;
-        let logoImage = null;
+        let currentTextSize = 14;
 
-        // Buat full background watermark (banyak & kecil)
         function createBackgroundWatermark() {
             const container = document.getElementById('bgWatermark');
             const text = "TEAM C CONVEYOR";
-            const rows = 20;
-            const cols = 14;
+            const rows = 18;
+            const cols = 12;
 
             for (let i = 0; i < rows; i++) {
                 for (let j = 0; j < cols; j++) {
                     const span = document.createElement('span');
                     span.textContent = text;
-                    
-                    // Posisi grid + sedikit acak
-                    const top = (i * 6) + (Math.random() * 2.5);
-                    const left = (j * 8) + (Math.random() * 3);
-                    
+                    const top = (i * 6.5) + (Math.random() * 2);
+                    const left = (j * 9) + (Math.random() * 3);
                     span.style.top = `${top}%`;
                     span.style.left = `${left}%`;
-                    
                     container.appendChild(span);
                 }
             }
@@ -347,20 +396,14 @@
 
             qrcodeInstance = new QRCode(container, {
                 text: inputTeks,
-                width: 230,
-                height: 230,
+                width: 210,
+                height: 210,
                 colorDark: "#000000",
                 colorLight: "#ffffff",
                 correctLevel: QRCode.CorrectLevel.H
             });
 
             updateTextLabels();
-
-            setTimeout(() => {
-                if (logoImage) {
-                    addLogoToQR();
-                }
-            }, 120);
         }
 
         function updateTextLabels() {
@@ -372,6 +415,7 @@
 
             if (textAbove) {
                 aboveEl.textContent = textAbove;
+                aboveEl.style.fontSize = currentTextSize + 'px';
                 aboveEl.classList.remove('hidden');
             } else {
                 aboveEl.classList.add('hidden');
@@ -379,59 +423,63 @@
 
             if (textBelow) {
                 belowEl.textContent = textBelow;
+                belowEl.style.fontSize = currentTextSize + 'px';
                 belowEl.classList.remove('hidden');
             } else {
                 belowEl.classList.add('hidden');
             }
         }
 
-        function handleLogoUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+        function setTextSize(size) {
+            const aboveEl = document.getElementById('textAbove');
+            const belowEl = document.getElementById('textBelow');
+            const slider = document.getElementById('textSizeSlider');
 
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                logoImage = new Image();
-                logoImage.onload = function() {
-                    document.getElementById('logoStatus').classList.remove('hidden');
-                    document.getElementById('logoFileName').textContent = file.name.length > 22 
-                        ? file.name.substring(0, 19) + '...' 
-                        : file.name;
+            // Reset active button
+            document.getElementById('btnKecil').classList.remove('active', 'border-blue-900');
+            document.getElementById('btnSedang').classList.remove('active', 'border-blue-900');
+            document.getElementById('btnBesar').classList.remove('active', 'border-blue-900');
 
-                    const inputTeks = document.getElementById('inputTeks').value.trim();
-                    if (inputTeks) generateQR();
-                };
-                logoImage.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
+            if (size === 'kecil') {
+                currentTextSize = 11;
+                document.getElementById('btnKecil').classList.add('active', 'border-blue-900');
+                slider.value = 11;
+            } else if (size === 'sedang') {
+                currentTextSize = 14;
+                document.getElementById('btnSedang').classList.add('active', 'border-blue-900');
+                slider.value = 14;
+            } else if (size === 'besar') {
+                currentTextSize = 48;
+                document.getElementById('btnBesar').classList.add('active', 'border-blue-900');
+                slider.value = 48;
+            }
+
+            aboveEl.style.fontSize = currentTextSize + 'px';
+            belowEl.style.fontSize = currentTextSize + 'px';
         }
 
-        function addLogoToQR() {
-            if (!logoImage || !qrcodeInstance) return;
+        function setTextSizeFromSlider() {
+            const slider = document.getElementById('textSizeSlider');
+            currentTextSize = parseInt(slider.value);
 
-            const qrCanvas = document.querySelector('#qrcode canvas');
-            if (!qrCanvas) return;
+            const aboveEl = document.getElementById('textAbove');
+            const belowEl = document.getElementById('textBelow');
 
-            const ctx = qrCanvas.getContext('2d');
-            const qrSize = qrCanvas.width;
-            const logoSize = qrSize * 0.17;
+            aboveEl.style.fontSize = currentTextSize + 'px';
+            belowEl.style.fontSize = currentTextSize + 'px';
 
-            const x = (qrSize - logoSize) / 2;
-            const y = (qrSize - logoSize) / 2;
+            // Update active button
+            document.getElementById('btnKecil').classList.remove('active', 'border-blue-900');
+            document.getElementById('btnSedang').classList.remove('active', 'border-blue-900');
+            document.getElementById('btnBesar').classList.remove('active', 'border-blue-900');
 
-            ctx.fillStyle = "#ffffff";
-            ctx.fillRect(x - 5, y - 5, logoSize + 10, logoSize + 10);
-
-            ctx.drawImage(logoImage, x, y, logoSize, logoSize);
-        }
-
-        function removeLogo() {
-            logoImage = null;
-            document.getElementById('logoStatus').classList.add('hidden');
-            document.getElementById('logoInput').value = '';
-
-            const inputTeks = document.getElementById('inputTeks').value.trim();
-            if (inputTeks) generateQR();
+            if (currentTextSize <= 12) {
+                document.getElementById('btnKecil').classList.add('active', 'border-blue-900');
+            } else if (currentTextSize <= 16) {
+                document.getElementById('btnSedang').classList.add('active', 'border-blue-900');
+            } else {
+                document.getElementById('btnBesar').classList.add('active', 'border-blue-900');
+            }
         }
 
         function clearQR() {
@@ -465,11 +513,11 @@
             const textAbove = document.getElementById('teksAtas').value.trim();
             const textBelow = document.getElementById('teksBawah').value.trim();
 
-            const padding = 24;
+            const padding = 16;
             let totalHeight = qrCanvas.height + padding * 2;
 
-            if (textAbove) totalHeight += 32;
-            if (textBelow) totalHeight += 32;
+            if (textAbove) totalHeight += currentTextSize + 12;
+            if (textBelow) totalHeight += currentTextSize + 12;
 
             finalCanvas.width = qrCanvas.width + padding * 2;
             finalCanvas.height = totalHeight;
@@ -481,19 +529,19 @@
 
             if (textAbove) {
                 ctx.fillStyle = "#1e2937";
-                ctx.font = "bold 17px Inter, system-ui, sans-serif";
+                ctx.font = `bold ${currentTextSize}px Inter, system-ui, sans-serif`;
                 ctx.textAlign = "center";
-                ctx.fillText(textAbove, finalCanvas.width / 2, currentY + 20);
-                currentY += 36;
+                ctx.fillText(textAbove, finalCanvas.width / 2, currentY + currentTextSize);
+                currentY += currentTextSize + 14;
             }
 
             ctx.drawImage(qrCanvas, padding, currentY);
 
             if (textBelow) {
                 ctx.fillStyle = "#1e2937";
-                ctx.font = "bold 16px Inter, system-ui, sans-serif";
+                ctx.font = `bold ${currentTextSize}px Inter, system-ui, sans-serif`;
                 ctx.textAlign = "center";
-                ctx.fillText(textBelow, finalCanvas.width / 2, currentY + qrCanvas.height + 24);
+                ctx.fillText(textBelow, finalCanvas.width / 2, currentY + qrCanvas.height + currentTextSize + 6);
             }
 
             const link = document.createElement('a');
@@ -502,12 +550,129 @@
             link.click();
         }
 
+        // ==================== COMBINED PREVIEW ====================
+        let combinedCanvasInstance = null;
+
+        function showCombinedPreview() {
+            const inputTeks = document.getElementById('inputTeks').value.trim();
+            if (!inputTeks) {
+                alert("Mohon isi Input Teks terlebih dahulu!");
+                return;
+            }
+
+            const qrCanvas = document.querySelector('#qrcode canvas');
+            if (!qrCanvas) {
+                alert("QR Code belum tergenerate!");
+                return;
+            }
+
+            const textAbove = document.getElementById('teksAtas').value.trim();
+            const textBelow = document.getElementById('teksBawah').value.trim();
+
+            const canvas = document.getElementById('combinedCanvas');
+            const ctx = canvas.getContext('2d');
+
+            const padding = 20;
+            let totalHeight = qrCanvas.height + padding * 2;
+
+            if (textAbove) totalHeight += currentTextSize + 14;
+            if (textBelow) totalHeight += currentTextSize + 14;
+
+            canvas.width = qrCanvas.width + padding * 2;
+            canvas.height = totalHeight;
+
+            // Background putih
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            let currentY = padding;
+
+            // Teks Atas
+            if (textAbove) {
+                ctx.fillStyle = "#1e2937";
+                ctx.font = `bold ${currentTextSize}px Inter, system-ui, sans-serif`;
+                ctx.textAlign = "center";
+                ctx.fillText(textAbove, canvas.width / 2, currentY + currentTextSize);
+                currentY += currentTextSize + 16;
+            }
+
+            // QR Code
+            ctx.drawImage(qrCanvas, padding, currentY);
+
+            // Teks Bawah
+            if (textBelow) {
+                ctx.fillStyle = "#1e2937";
+                ctx.font = `bold ${currentTextSize}px Inter, system-ui, sans-serif`;
+                ctx.textAlign = "center";
+                ctx.fillText(textBelow, canvas.width / 2, currentY + qrCanvas.height + currentTextSize + 8);
+            }
+
+            // Tampilkan section
+            document.getElementById('combinedPreviewSection').classList.remove('hidden');
+            
+            // Scroll ke section
+            document.getElementById('combinedPreviewSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function hideCombinedPreview() {
+            document.getElementById('combinedPreviewSection').classList.add('hidden');
+        }
+
+        function downloadCombined() {
+            const canvas = document.getElementById('combinedCanvas');
+            if (!canvas) return;
+
+            const inputTeks = document.getElementById('inputTeks').value.trim() || 'QR';
+            const link = document.createElement('a');
+            link.download = `QR_Gabungan_${inputTeks}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function printCombined() {
+            const canvas = document.getElementById('combinedCanvas');
+            if (!canvas) return;
+
+            // Buka window baru untuk print
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                    <head><title>Print QR Gabungan</title></head>
+                    <body style="margin:0; display:flex; justify-content:center; align-items:center; min-height:100vh; background:white;">
+                        <img src="${canvas.toDataURL('image/png')}" style="max-width:100%; height:auto;" />
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
+            
+            setTimeout(() => {
+                printWindow.print();
+            }, 300);
+        }
+
+        function openCombinedInNewTab() {
+            const canvas = document.getElementById('combinedCanvas');
+            if (!canvas) return;
+
+            const dataUrl = canvas.toDataURL('image/png');
+            const newTab = window.open();
+            newTab.document.write(`
+                <html>
+                    <head><title>QR Code + Teks</title></head>
+                    <body style="margin:0; background:#f8fafc; display:flex; justify-content:center; align-items:center; min-height:100vh;">
+                        <img src="${dataUrl}" style="max-width:95%; height:auto; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);" />
+                    </body>
+                </html>
+            `);
+            newTab.document.close();
+        }
+
         function init() {
-            // Buat watermark background penuh (banyak & kecil)
             createBackgroundWatermark();
 
-            // Semua input dibiarkan kosong, hanya placeholder
-            // Tidak ada value default
+            // Default ukuran teks
+            currentTextSize = 14;
+            document.getElementById('btnSedang').classList.add('active', 'border-blue-900');
 
             // Event listener
             const inputs = ['inputTeks', 'teksAtas', 'teksBawah'];
@@ -522,7 +687,7 @@
                 }
             });
 
-            console.log('%c[QR Inventory] Full page watermark + input kosong siap', 'color:#64748b');
+            console.log('%c[QR Inventory] Versi tanpa logo + kontrol ukuran teks siap', 'color:#64748b');
         }
 
         window.onload = init;
