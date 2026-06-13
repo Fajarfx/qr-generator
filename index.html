@@ -250,7 +250,7 @@
                     
                     <!-- Range Slider -->
                     <div class="mt-3">
-                        <input type="range" id="textSizeSlider" min="10" max="52" step="1" value="14"
+                        <input type="range" id="textSizeSlider" min="10" max="200" step="1" value="14"
                                class="w-full accent-blue-900" oninput="setTextSizeFromSlider()">
                         <div class="flex justify-between text-[10px] text-slate-400 mt-0.5">
                             <span>Kecil</span>
@@ -449,9 +449,9 @@
                 document.getElementById('btnSedang').classList.add('active', 'border-blue-900');
                 slider.value = 14;
             } else if (size === 'besar') {
-                currentTextSize = 48;
+                currentTextSize = 192;
                 document.getElementById('btnBesar').classList.add('active', 'border-blue-900');
-                slider.value = 48;
+                slider.value = 192;
             }
 
             aboveEl.style.fontSize = currentTextSize + 'px';
@@ -477,7 +477,7 @@
                 document.getElementById('btnKecil').classList.add('active', 'border-blue-900');
             } else if (currentTextSize <= 16) {
                 document.getElementById('btnSedang').classList.add('active', 'border-blue-900');
-            } else {
+            } else if (currentTextSize >= 192) {
                 document.getElementById('btnBesar').classList.add('active', 'border-blue-900');
             }
         }
