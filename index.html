@@ -212,25 +212,25 @@
                 <!-- Input Teks -->
                 <div class="mb-5">
                     <label class="label-text block mb-1.5">INPUT TEKS</label>
-                    <input id="inputTeks" type="text" 
-                           class="input-field w-full px-4 py-[17px] rounded-2xl text-lg font-semibold bg-white"
-                           placeholder="ops........." oninput="generateQR()">
+                    <textarea id="inputTeks" rows="3"
+                           class="input-field w-full px-4 py-3 rounded-2xl text-lg font-semibold bg-white resize-y"
+                           placeholder="ops........." oninput="generateQR()"></textarea>
                 </div>
 
                 <!-- Teks di Atas QR -->
                 <div class="mb-4">
                     <label class="label-text block mb-1.5">TEKS DI ATAS QR</label>
-                    <input id="teksAtas" type="text" 
-                           class="input-field w-full px-4 py-3 rounded-2xl bg-white"
-                           placeholder="ops atau missort..." oninput="generateQR()">
+                    <textarea id="teksAtas" rows="2"
+                           class="input-field w-full px-4 py-3 rounded-2xl bg-white resize-y"
+                           placeholder="ops atau missort..." oninput="generateQR()"></textarea>
                 </div>
 
                 <!-- Teks di Bawah QR -->
                 <div class="mb-5">
                     <label class="label-text block mb-1.5">TEKS DI BAWAH QR</label>
-                    <input id="teksBawah" type="text" 
-                           class="input-field w-full px-4 py-3 rounded-2xl bg-white"
-                           placeholder="ops atau missort..." oninput="generateQR()">
+                    <textarea id="teksBawah" rows="2"
+                           class="input-field w-full px-4 py-3 rounded-2xl bg-white resize-y"
+                           placeholder="ops atau missort..." oninput="generateQR()"></textarea>
                 </div>
 
                 <!-- Ukuran Teks -->
@@ -497,6 +497,51 @@
             window.print();
         }
 
+        // ==================== HELPER: WRAP TEXT ON CANVAS ====================
+        function measureWrappedText(ctx, text, maxWidth) {
+            // Split by newlines first, then wrap each line by word
+            const hardLines = text.split('\n');
+            const allLines = [];
+            hardLines.forEach(line => {
+                if (line.trim() === '') { allLines.push(''); return; }
+                const words = line.split(' ');
+                let current = '';
+                words.forEach(word => {
+                    const test = current ? current + ' ' + word : word;
+                    if (ctx.measureText(test).width > maxWidth && current) {
+                        allLines.push(current);
+                        current = word;
+                    } else {
+                        current = test;
+                    }
+                });
+                if (current) allLines.push(current);
+            });
+            return allLines;
+        }
+
+        function drawWrappedText(ctx, text, x, startY, maxWidth, lineHeight) {
+            const lines = measureWrappedText(ctx, text, maxWidth);
+            lines.forEach((line, i) => {
+                ctx.fillText(line, x, startY + i * lineHeight);
+            });
+            return lines.length * lineHeight;
+        }
+
+        function calcCanvasWidth(ctx, textAbove, textBelow, qrWidth, padding) {
+            // Canvas width = max of (QR width, text widths) + padding*2
+            let maxTextWidth = 0;
+            if (textAbove) {
+                const w = ctx.measureText(textAbove.split('\n').reduce((a,b) => a.length > b.length ? a : b)).width;
+                if (w > maxTextWidth) maxTextWidth = w;
+            }
+            if (textBelow) {
+                const w = ctx.measureText(textBelow.split('\n').reduce((a,b) => a.length > b.length ? a : b)).width;
+                if (w > maxTextWidth) maxTextWidth = w;
+            }
+            return Math.max(qrWidth + padding * 2, maxTextWidth + padding * 2);
+        }
+
         function downloadQR() {
             const inputTeks = document.getElementById('inputTeks').value.trim();
             if (!inputTeks) {
@@ -512,36 +557,45 @@
 
             const textAbove = document.getElementById('teksAtas').value.trim();
             const textBelow = document.getElementById('teksBawah').value.trim();
+            const padding = 20;
+            const lineHeight = currentTextSize * 1.4;
 
-            const padding = 16;
+            ctx.font = `bold ${currentTextSize}px Inter, system-ui, sans-serif`;
+
+            // Hitung lebar canvas agar teks tidak terpotong
+            const canvasWidth = calcCanvasWidth(ctx, textAbove, textBelow, qrCanvas.width, padding);
+            const textMaxWidth = canvasWidth - padding * 2;
+
+            // Pre-calculate tinggi teks
+            let aboveLines = textAbove ? measureWrappedText(ctx, textAbove, textMaxWidth) : [];
+            let belowLines = textBelow ? measureWrappedText(ctx, textBelow, textMaxWidth) : [];
+
             let totalHeight = qrCanvas.height + padding * 2;
+            if (aboveLines.length) totalHeight += aboveLines.length * lineHeight + 12;
+            if (belowLines.length) totalHeight += belowLines.length * lineHeight + 12;
 
-            if (textAbove) totalHeight += currentTextSize + 12;
-            if (textBelow) totalHeight += currentTextSize + 12;
-
-            finalCanvas.width = qrCanvas.width + padding * 2;
+            finalCanvas.width = canvasWidth;
             finalCanvas.height = totalHeight;
 
+            // Set font lagi setelah resize canvas (canvas resize reset context)
             ctx.fillStyle = "#ffffff";
             ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+            ctx.font = `bold ${currentTextSize}px Inter, system-ui, sans-serif`;
+            ctx.fillStyle = "#1e2937";
+            ctx.textAlign = "center";
 
             let currentY = padding;
 
-            if (textAbove) {
-                ctx.fillStyle = "#1e2937";
-                ctx.font = `bold ${currentTextSize}px Inter, system-ui, sans-serif`;
-                ctx.textAlign = "center";
-                ctx.fillText(textAbove, finalCanvas.width / 2, currentY + currentTextSize);
-                currentY += currentTextSize + 14;
+            if (aboveLines.length) {
+                drawWrappedText(ctx, textAbove, finalCanvas.width / 2, currentY + currentTextSize, textMaxWidth, lineHeight);
+                currentY += aboveLines.length * lineHeight + 12;
             }
 
-            ctx.drawImage(qrCanvas, padding, currentY);
+            ctx.drawImage(qrCanvas, (finalCanvas.width - qrCanvas.width) / 2, currentY);
+            currentY += qrCanvas.height + 12;
 
-            if (textBelow) {
-                ctx.fillStyle = "#1e2937";
-                ctx.font = `bold ${currentTextSize}px Inter, system-ui, sans-serif`;
-                ctx.textAlign = "center";
-                ctx.fillText(textBelow, finalCanvas.width / 2, currentY + qrCanvas.height + currentTextSize + 6);
+            if (belowLines.length) {
+                drawWrappedText(ctx, textBelow, finalCanvas.width / 2, currentY + currentTextSize, textMaxWidth, lineHeight);
             }
 
             const link = document.createElement('a');
@@ -573,38 +627,44 @@
             const ctx = canvas.getContext('2d');
 
             const padding = 20;
+            const lineHeight = currentTextSize * 1.4;
+
+            ctx.font = `bold ${currentTextSize}px Inter, system-ui, sans-serif`;
+
+            // Hitung lebar canvas agar teks tidak terpotong
+            const canvasWidth = calcCanvasWidth(ctx, textAbove, textBelow, qrCanvas.width, padding);
+            const textMaxWidth = canvasWidth - padding * 2;
+
+            // Pre-calculate tinggi teks
+            let aboveLines = textAbove ? measureWrappedText(ctx, textAbove, textMaxWidth) : [];
+            let belowLines = textBelow ? measureWrappedText(ctx, textBelow, textMaxWidth) : [];
+
             let totalHeight = qrCanvas.height + padding * 2;
+            if (aboveLines.length) totalHeight += aboveLines.length * lineHeight + 12;
+            if (belowLines.length) totalHeight += belowLines.length * lineHeight + 12;
 
-            if (textAbove) totalHeight += currentTextSize + 14;
-            if (textBelow) totalHeight += currentTextSize + 14;
-
-            canvas.width = qrCanvas.width + padding * 2;
+            canvas.width = canvasWidth;
             canvas.height = totalHeight;
 
-            // Background putih
+            // Set font lagi setelah resize canvas
             ctx.fillStyle = "#ffffff";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.font = `bold ${currentTextSize}px Inter, system-ui, sans-serif`;
+            ctx.fillStyle = "#1e2937";
+            ctx.textAlign = "center";
 
             let currentY = padding;
 
-            // Teks Atas
-            if (textAbove) {
-                ctx.fillStyle = "#1e2937";
-                ctx.font = `bold ${currentTextSize}px Inter, system-ui, sans-serif`;
-                ctx.textAlign = "center";
-                ctx.fillText(textAbove, canvas.width / 2, currentY + currentTextSize);
-                currentY += currentTextSize + 16;
+            if (aboveLines.length) {
+                drawWrappedText(ctx, textAbove, canvas.width / 2, currentY + currentTextSize, textMaxWidth, lineHeight);
+                currentY += aboveLines.length * lineHeight + 12;
             }
 
-            // QR Code
-            ctx.drawImage(qrCanvas, padding, currentY);
+            ctx.drawImage(qrCanvas, (canvas.width - qrCanvas.width) / 2, currentY);
+            currentY += qrCanvas.height + 12;
 
-            // Teks Bawah
-            if (textBelow) {
-                ctx.fillStyle = "#1e2937";
-                ctx.font = `bold ${currentTextSize}px Inter, system-ui, sans-serif`;
-                ctx.textAlign = "center";
-                ctx.fillText(textBelow, canvas.width / 2, currentY + qrCanvas.height + currentTextSize + 8);
+            if (belowLines.length) {
+                drawWrappedText(ctx, textBelow, canvas.width / 2, currentY + currentTextSize, textMaxWidth, lineHeight);
             }
 
             // Tampilkan section
