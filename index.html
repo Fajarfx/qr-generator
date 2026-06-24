@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>QR Code • Inventory</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
@@ -86,7 +86,6 @@
             word-break: break-word;
         }
 
-        /* Full Background Watermark */
         .bg-watermark {
             position: fixed;
             top: 0;
@@ -116,6 +115,7 @@
             font-weight: 600;
             border-radius: 9999px;
             transition: all 0.2s;
+            cursor: pointer;
         }
         
         .size-btn.active {
@@ -131,20 +131,162 @@
             z-index: 10;
         }
 
+        /* ===== SCANNER STYLES ===== */
+        .scanner-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.92);
+            z-index: 9999;
+            padding: 20px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .scanner-overlay.active {
+            display: flex;
+        }
+        .scanner-box {
+            position: relative;
+            width: 100%;
+            max-width: 420px;
+            aspect-ratio: 3/4;
+            background: #000;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        .scanner-box video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .scanner-box .scan-box {
+            position: absolute;
+            left: 10%;
+            right: 10%;
+            top: 35%;
+            bottom: 35%;
+            border: 2px solid #4edea3;
+            border-radius: 10px;
+            box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
+            pointer-events: none;
+        }
+        .scanner-box .hint {
+            position: absolute;
+            bottom: 12px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: #fff;
+            font-size: 13px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            padding: 0 16px;
+        }
+        .scanner-box .flash {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #fff;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .scanner-box .flash.go {
+            animation: flashpop 0.25s ease-out;
+        }
+        @keyframes flashpop {
+            0% { opacity: 0.85; }
+            100% { opacity: 0; }
+        }
+        .scanner-controls {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            width: 100%;
+            max-width: 420px;
+        }
+        .scanner-controls button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .scanner-controls button:active {
+            transform: scale(0.97);
+        }
+        .btn-scan-primary {
+            background: #4edea3;
+            color: #06140f;
+        }
+        .btn-scan-secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .scanner-status {
+            color: #7d93a8;
+            font-size: 13px;
+            margin-top: 10px;
+            text-align: center;
+            max-width: 420px;
+        }
+        .scanner-status.active {
+            color: #4edea3;
+        }
+        .btn-scan-missort {
+            background: linear-gradient(135deg, #059669, #047857);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
+        }
+        .btn-scan-missort:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px -4px rgba(5, 150, 105, 0.4);
+        }
+        .btn-scan-missort i {
+            font-size: 18px;
+        }
+        .scanner-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(0,0,0,0.6);
+            color: #4edea3;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.3px;
+        }
+
         @media print {
             @page {
                 size: auto;
                 margin: 5mm;
             }
-
             body * {
                 visibility: hidden;
             }
-            
             #print-area, #print-area * {
                 visibility: visible;
             }
-            
             #print-area {
                 position: absolute;
                 left: 0;
@@ -153,23 +295,22 @@
                 display: flex;
                 justify-content: center;
             }
-
             .qr-container {
                 padding: 6px !important;
                 border: 1.5px solid #1e3a8a !important;
             }
-
             #qrcode canvas {
                 width: 125px !important;
                 height: 125px !important;
             }
-
             .text-above, .text-below {
                 font-size: 11px !important;
                 margin: 2px 0 !important;
             }
-
             .bg-watermark, .no-print {
+                display: none !important;
+            }
+            .scanner-overlay {
                 display: none !important;
             }
         }
@@ -184,14 +325,20 @@
         
         <!-- Header -->
         <div class="industrial-header rounded-3xl px-8 py-6 mb-8 text-white">
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between flex-wrap gap-4">
                 <div>
                     <h1 class="text-3xl font-display tracking-tight">QR CODE</h1>
                     <p class="text-blue-200 mt-1 text-sm font-medium">TIM C CONVEYOR</p>
                 </div>
-                <div class="px-4 py-2 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center gap-2 text-sm">
-                    <i class="fa-solid fa-industry"></i>
-                    <span class="font-semibold">Team C</span>
+                <div class="flex items-center gap-3 flex-wrap">
+                    <div class="px-4 py-2 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center gap-2 text-sm">
+                        <i class="fa-solid fa-industry"></i>
+                        <span class="font-semibold">Team C</span>
+                    </div>
+                    <button onclick="openScanner()" class="btn-scan-missort">
+                        <i class="fa-solid fa-camera"></i>
+                        Scan Missort
+                    </button>
                 </div>
             </div>
         </div>
@@ -209,49 +356,40 @@
                     </div>
                 </div>
 
-                <!-- Input Teks -->
                 <div class="mb-5">
                     <label class="label-text block mb-1.5">INPUT TEKS</label>
                     <textarea id="inputTeks" rows="3"
                            class="input-field w-full px-4 py-3 rounded-2xl text-lg font-semibold bg-white resize-y"
-                           placeholder="ops........." oninput="generateQR()"></textarea>
+                           placeholder="ops........."></textarea>
                 </div>
 
-                <!-- Teks di Atas QR -->
                 <div class="mb-4">
                     <label class="label-text block mb-1.5">TEKS DI ATAS QR</label>
                     <textarea id="teksAtas" rows="2"
                            class="input-field w-full px-4 py-3 rounded-2xl bg-white resize-y"
-                           placeholder="ops atau missort..." oninput="generateQR()"></textarea>
+                           placeholder="ops atau missort..."></textarea>
                 </div>
 
-                <!-- Teks di Bawah QR -->
                 <div class="mb-5">
                     <label class="label-text block mb-1.5">TEKS DI BAWAH QR</label>
                     <textarea id="teksBawah" rows="2"
                            class="input-field w-full px-4 py-3 rounded-2xl bg-white resize-y"
-                           placeholder="ops atau missort..." oninput="generateQR()"></textarea>
+                           placeholder="ops atau missort..."></textarea>
                 </div>
 
-                <!-- Ukuran Teks -->
                 <div class="mb-2">
                     <label class="label-text block mb-2">UKURAN TEKS</label>
-                    
                     <div class="flex gap-2">
                         <button onclick="setTextSize('kecil')" id="btnKecil"
-                                class="size-btn flex-1 border border-slate-300 text-slate-600 hover:bg-slate-50 active">Kecil</button>
-                        
+                                class="size-btn flex-1 border border-slate-300 text-slate-600 hover:bg-slate-50">Kecil</button>
                         <button onclick="setTextSize('sedang')" id="btnSedang"
-                                class="size-btn flex-1 border border-slate-300 text-slate-600 hover:bg-slate-50">Sedang</button>
-                        
+                                class="size-btn flex-1 border border-slate-300 text-slate-600 hover:bg-slate-50 active bg-blue-900 text-white">Sedang</button>
                         <button onclick="setTextSize('besar')" id="btnBesar"
                                 class="size-btn flex-1 border border-slate-300 text-slate-600 hover:bg-slate-50">Besar</button>
                     </div>
-                    
-                    <!-- Range Slider -->
                     <div class="mt-3">
                         <input type="range" id="textSizeSlider" min="10" max="200" step="1" value="14"
-                               class="w-full accent-blue-900" oninput="setTextSizeFromSlider()">
+                               class="w-full accent-blue-900">
                         <div class="flex justify-between text-[10px] text-slate-400 mt-0.5">
                             <span>Kecil</span>
                             <span>Sangat Besar</span>
@@ -274,29 +412,31 @@
                     </div>
                 </div>
 
-                <!-- Preview Area -->
                 <div class="flex justify-center items-center min-h-[340px] bg-white rounded-3xl p-8 border border-slate-200" id="previewContainer">
                     <div id="print-area">
                         <div class="qr-wrapper" id="qrWrapper">
-                            
-                            <!-- Teks Atas -->
                             <div id="textAbove" class="text-above text-[14px] hidden px-2"></div>
-                            
-                            <!-- QR Code -->
                             <div class="qr-container">
                                 <div id="qrcode"></div>
                             </div>
-                            
-                            <!-- Teks Bawah -->
                             <div id="textBelow" class="text-below text-[14px] hidden px-2"></div>
-                            
                         </div>
                     </div>
                 </div>
 
-                
+                <div class="grid grid-cols-2 gap-3 mt-6">
+                    <button onclick="printLabel()" 
+                            class="btn-print col-span-1 text-white py-4 rounded-2xl flex items-center justify-center gap-3 text-base shadow-lg active:scale-[0.985]">
+                        <i class="fa-solid fa-print text-xl"></i>
+                        <span class="font-bold tracking-wide">PRINT LABEL</span>
+                    </button>
+                    <button onclick="downloadQR()" 
+                            class="col-span-1 bg-white border-2 border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold py-4 rounded-2xl flex items-center justify-center gap-3 transition-colors active:scale-[0.985]">
+                        <i class="fa-solid fa-download"></i>
+                        <span>Download PNG</span>
+                    </button>
+                </div>
 
-                <!-- Tombol Preview Gabungan -->
                 <div class="mt-4">
                     <button onclick="showCombinedPreview()" 
                             class="w-full border-2 border-blue-900 text-blue-900 hover:bg-blue-50 font-semibold py-3 rounded-2xl flex items-center justify-center gap-2 transition-colors">
@@ -318,11 +458,9 @@
                     <i class="fa-solid fa-times text-xl"></i>
                 </button>
             </div>
-            
             <div class="flex justify-center bg-slate-50 rounded-2xl p-6">
                 <canvas id="combinedCanvas" class="border border-slate-200 rounded-xl"></canvas>
             </div>
-
             <div class="flex gap-3 mt-5">
                 <button onclick="downloadCombined()" 
                         class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-2xl flex items-center justify-center gap-2">
@@ -342,13 +480,37 @@
             </div>
         </div>
 
-        <!-- Footer -->
         <div class="mt-8 text-center">
             <p class="footer">© by Fajar</p>
         </div>
     </div>
 
+    <!-- ===== SCANNER OVERLAY ===== -->
+    <div class="scanner-overlay" id="scannerOverlay">
+        <div class="scanner-box" id="scannerBox">
+            <video id="scannerVideo" autoplay playsinline muted></video>
+            <div class="scan-box"></div>
+            <div class="hint">Posisikan kode SPXID di dalam kotak</div>
+            <div class="flash" id="scannerFlash"></div>
+            <div class="scanner-badge">SCAN</div>
+        </div>
+        <div class="scanner-controls">
+            <button class="btn-scan-secondary" onclick="closeScanner()">
+                <i class="fa-solid fa-times"></i> Tutup
+            </button>
+            <button class="btn-scan-primary" id="btnScanCapture">
+                <i class="fa-solid fa-camera"></i> Jepret & Scan
+            </button>
+        </div>
+        <div class="scanner-status" id="scannerStatus">Tekan "Jepret & Scan" untuk mengambil foto</div>
+    </div>
+
+    <canvas id="scanCaptureCanvas" style="display:none;"></canvas>
+
     <script>
+        // =====================================================
+        // QR INVENTORY CORE
+        // =====================================================
         let qrcodeInstance = null;
         let currentTextSize = 14;
 
@@ -357,15 +519,14 @@
             const text = "TEAM C CONVEYOR";
             const rows = 18;
             const cols = 12;
-
             for (let i = 0; i < rows; i++) {
                 for (let j = 0; j < cols; j++) {
                     const span = document.createElement('span');
                     span.textContent = text;
                     const top = (i * 6.5) + (Math.random() * 2);
                     const left = (j * 9) + (Math.random() * 3);
-                    span.style.top = `${top}%`;
-                    span.style.left = `${left}%`;
+                    span.style.top = top + '%';
+                    span.style.left = left + '%';
                     container.appendChild(span);
                 }
             }
@@ -377,10 +538,8 @@
                 clearQR();
                 return;
             }
-
             const container = document.getElementById('qrcode');
             container.innerHTML = '';
-
             qrcodeInstance = new QRCode(container, {
                 text: inputTeks,
                 width: 210,
@@ -389,17 +548,14 @@
                 colorLight: "#ffffff",
                 correctLevel: QRCode.CorrectLevel.H
             });
-
             updateTextLabels();
         }
 
         function updateTextLabels() {
             const textAbove = document.getElementById('teksAtas').value.trim();
             const textBelow = document.getElementById('teksBawah').value.trim();
-
             const aboveEl = document.getElementById('textAbove');
             const belowEl = document.getElementById('textBelow');
-
             if (textAbove) {
                 aboveEl.textContent = textAbove;
                 aboveEl.style.fontSize = currentTextSize + 'px';
@@ -407,7 +563,6 @@
             } else {
                 aboveEl.classList.add('hidden');
             }
-
             if (textBelow) {
                 belowEl.textContent = textBelow;
                 belowEl.style.fontSize = currentTextSize + 'px';
@@ -421,26 +576,22 @@
             const aboveEl = document.getElementById('textAbove');
             const belowEl = document.getElementById('textBelow');
             const slider = document.getElementById('textSizeSlider');
-
-            // Reset active button
-            document.getElementById('btnKecil').classList.remove('active', 'border-blue-900');
-            document.getElementById('btnSedang').classList.remove('active', 'border-blue-900');
-            document.getElementById('btnBesar').classList.remove('active', 'border-blue-900');
-
+            document.getElementById('btnKecil').classList.remove('active', 'bg-blue-900', 'text-white');
+            document.getElementById('btnSedang').classList.remove('active', 'bg-blue-900', 'text-white');
+            document.getElementById('btnBesar').classList.remove('active', 'bg-blue-900', 'text-white');
             if (size === 'kecil') {
                 currentTextSize = 11;
-                document.getElementById('btnKecil').classList.add('active', 'border-blue-900');
+                document.getElementById('btnKecil').classList.add('active', 'bg-blue-900', 'text-white');
                 slider.value = 11;
             } else if (size === 'sedang') {
                 currentTextSize = 14;
-                document.getElementById('btnSedang').classList.add('active', 'border-blue-900');
+                document.getElementById('btnSedang').classList.add('active', 'bg-blue-900', 'text-white');
                 slider.value = 14;
             } else if (size === 'besar') {
                 currentTextSize = 192;
-                document.getElementById('btnBesar').classList.add('active', 'border-blue-900');
+                document.getElementById('btnBesar').classList.add('active', 'bg-blue-900', 'text-white');
                 slider.value = 192;
             }
-
             aboveEl.style.fontSize = currentTextSize + 'px';
             belowEl.style.fontSize = currentTextSize + 'px';
         }
@@ -448,24 +599,19 @@
         function setTextSizeFromSlider() {
             const slider = document.getElementById('textSizeSlider');
             currentTextSize = parseInt(slider.value);
-
             const aboveEl = document.getElementById('textAbove');
             const belowEl = document.getElementById('textBelow');
-
             aboveEl.style.fontSize = currentTextSize + 'px';
             belowEl.style.fontSize = currentTextSize + 'px';
-
-            // Update active button
-            document.getElementById('btnKecil').classList.remove('active', 'border-blue-900');
-            document.getElementById('btnSedang').classList.remove('active', 'border-blue-900');
-            document.getElementById('btnBesar').classList.remove('active', 'border-blue-900');
-
+            document.getElementById('btnKecil').classList.remove('active', 'bg-blue-900', 'text-white');
+            document.getElementById('btnSedang').classList.remove('active', 'bg-blue-900', 'text-white');
+            document.getElementById('btnBesar').classList.remove('active', 'bg-blue-900', 'text-white');
             if (currentTextSize <= 12) {
-                document.getElementById('btnKecil').classList.add('active', 'border-blue-900');
+                document.getElementById('btnKecil').classList.add('active', 'bg-blue-900', 'text-white');
             } else if (currentTextSize <= 16) {
-                document.getElementById('btnSedang').classList.add('active', 'border-blue-900');
+                document.getElementById('btnSedang').classList.add('active', 'bg-blue-900', 'text-white');
             } else if (currentTextSize >= 192) {
-                document.getElementById('btnBesar').classList.add('active', 'border-blue-900');
+                document.getElementById('btnBesar').classList.add('active', 'bg-blue-900', 'text-white');
             }
         }
 
@@ -486,7 +632,6 @@
 
         // ==================== HELPER: WRAP TEXT ON CANVAS ====================
         function measureWrappedText(ctx, text, maxWidth) {
-            // Split by newlines first, then wrap each line by word
             const hardLines = text.split('\n');
             const allLines = [];
             hardLines.forEach(line => {
@@ -516,14 +661,17 @@
         }
 
         function calcCanvasWidth(ctx, textAbove, textBelow, qrWidth, padding) {
-            // Canvas width = max of (QR width, text widths) + padding*2
             let maxTextWidth = 0;
             if (textAbove) {
-                const w = ctx.measureText(textAbove.split('\n').reduce((a,b) => a.length > b.length ? a : b)).width;
+                const lines = textAbove.split('\n');
+                let maxLine = lines.reduce((a,b) => a.length > b.length ? a : b);
+                const w = ctx.measureText(maxLine).width;
                 if (w > maxTextWidth) maxTextWidth = w;
             }
             if (textBelow) {
-                const w = ctx.measureText(textBelow.split('\n').reduce((a,b) => a.length > b.length ? a : b)).width;
+                const lines = textBelow.split('\n');
+                let maxLine = lines.reduce((a,b) => a.length > b.length ? a : b);
+                const w = ctx.measureText(maxLine).width;
                 if (w > maxTextWidth) maxTextWidth = w;
             }
             return Math.max(qrWidth + padding * 2, maxTextWidth + padding * 2);
@@ -535,129 +683,89 @@
                 alert("Mohon isi Input Teks terlebih dahulu!");
                 return;
             }
-
             const qrCanvas = document.querySelector('#qrcode canvas');
             if (!qrCanvas) return;
-
             const finalCanvas = document.createElement('canvas');
             const ctx = finalCanvas.getContext('2d');
-
             const textAbove = document.getElementById('teksAtas').value.trim();
             const textBelow = document.getElementById('teksBawah').value.trim();
             const padding = 20;
             const lineHeight = currentTextSize * 1.4;
-
-            ctx.font = `bold ${currentTextSize}px Inter, system-ui, sans-serif`;
-
-            // Hitung lebar canvas agar teks tidak terpotong
+            ctx.font = 'bold ' + currentTextSize + 'px Inter, system-ui, sans-serif';
             const canvasWidth = calcCanvasWidth(ctx, textAbove, textBelow, qrCanvas.width, padding);
             const textMaxWidth = canvasWidth - padding * 2;
-
-            // Pre-calculate tinggi teks
             let aboveLines = textAbove ? measureWrappedText(ctx, textAbove, textMaxWidth) : [];
             let belowLines = textBelow ? measureWrappedText(ctx, textBelow, textMaxWidth) : [];
-
             let totalHeight = qrCanvas.height + padding * 2;
             if (aboveLines.length) totalHeight += aboveLines.length * lineHeight + 12;
             if (belowLines.length) totalHeight += belowLines.length * lineHeight + 12;
-
             finalCanvas.width = canvasWidth;
             finalCanvas.height = totalHeight;
-
-            // Set font lagi setelah resize canvas (canvas resize reset context)
             ctx.fillStyle = "#ffffff";
             ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
-            ctx.font = `bold ${currentTextSize}px Inter, system-ui, sans-serif`;
+            ctx.font = 'bold ' + currentTextSize + 'px Inter, system-ui, sans-serif';
             ctx.fillStyle = "#1e2937";
             ctx.textAlign = "center";
-
             let currentY = padding;
-
             if (aboveLines.length) {
                 drawWrappedText(ctx, textAbove, finalCanvas.width / 2, currentY + currentTextSize, textMaxWidth, lineHeight);
                 currentY += aboveLines.length * lineHeight + 12;
             }
-
             ctx.drawImage(qrCanvas, (finalCanvas.width - qrCanvas.width) / 2, currentY);
             currentY += qrCanvas.height + 12;
-
             if (belowLines.length) {
                 drawWrappedText(ctx, textBelow, finalCanvas.width / 2, currentY + currentTextSize, textMaxWidth, lineHeight);
             }
-
             const link = document.createElement('a');
-            link.download = `QR_${inputTeks}.png`;
+            link.download = 'QR_' + inputTeks + '.png';
             link.href = finalCanvas.toDataURL('image/png');
             link.click();
         }
 
         // ==================== COMBINED PREVIEW ====================
-        let combinedCanvasInstance = null;
-
         function showCombinedPreview() {
             const inputTeks = document.getElementById('inputTeks').value.trim();
             if (!inputTeks) {
                 alert("Mohon isi Input Teks terlebih dahulu!");
                 return;
             }
-
             const qrCanvas = document.querySelector('#qrcode canvas');
             if (!qrCanvas) {
                 alert("QR Code belum tergenerate!");
                 return;
             }
-
             const textAbove = document.getElementById('teksAtas').value.trim();
             const textBelow = document.getElementById('teksBawah').value.trim();
-
             const canvas = document.getElementById('combinedCanvas');
             const ctx = canvas.getContext('2d');
-
             const padding = 20;
             const lineHeight = currentTextSize * 1.4;
-
-            ctx.font = `bold ${currentTextSize}px Inter, system-ui, sans-serif`;
-
-            // Hitung lebar canvas agar teks tidak terpotong
+            ctx.font = 'bold ' + currentTextSize + 'px Inter, system-ui, sans-serif';
             const canvasWidth = calcCanvasWidth(ctx, textAbove, textBelow, qrCanvas.width, padding);
             const textMaxWidth = canvasWidth - padding * 2;
-
-            // Pre-calculate tinggi teks
             let aboveLines = textAbove ? measureWrappedText(ctx, textAbove, textMaxWidth) : [];
             let belowLines = textBelow ? measureWrappedText(ctx, textBelow, textMaxWidth) : [];
-
             let totalHeight = qrCanvas.height + padding * 2;
             if (aboveLines.length) totalHeight += aboveLines.length * lineHeight + 12;
             if (belowLines.length) totalHeight += belowLines.length * lineHeight + 12;
-
             canvas.width = canvasWidth;
             canvas.height = totalHeight;
-
-            // Set font lagi setelah resize canvas
             ctx.fillStyle = "#ffffff";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.font = `bold ${currentTextSize}px Inter, system-ui, sans-serif`;
+            ctx.font = 'bold ' + currentTextSize + 'px Inter, system-ui, sans-serif';
             ctx.fillStyle = "#1e2937";
             ctx.textAlign = "center";
-
             let currentY = padding;
-
             if (aboveLines.length) {
                 drawWrappedText(ctx, textAbove, canvas.width / 2, currentY + currentTextSize, textMaxWidth, lineHeight);
                 currentY += aboveLines.length * lineHeight + 12;
             }
-
             ctx.drawImage(qrCanvas, (canvas.width - qrCanvas.width) / 2, currentY);
             currentY += qrCanvas.height + 12;
-
             if (belowLines.length) {
                 drawWrappedText(ctx, textBelow, canvas.width / 2, currentY + currentTextSize, textMaxWidth, lineHeight);
             }
-
-            // Tampilkan section
             document.getElementById('combinedPreviewSection').classList.remove('hidden');
-            
-            // Scroll ke section
             document.getElementById('combinedPreviewSection').scrollIntoView({ behavior: 'smooth' });
         }
 
@@ -668,10 +776,9 @@
         function downloadCombined() {
             const canvas = document.getElementById('combinedCanvas');
             if (!canvas) return;
-
             const inputTeks = document.getElementById('inputTeks').value.trim() || 'QR';
             const link = document.createElement('a');
-            link.download = `QR_Gabungan_${inputTeks}.png`;
+            link.download = 'QR_Gabungan_' + inputTeks + '.png';
             link.href = canvas.toDataURL('image/png');
             link.click();
         }
@@ -679,62 +786,154 @@
         function printCombined() {
             const canvas = document.getElementById('combinedCanvas');
             if (!canvas) return;
-
-            // Buka window baru untuk print
             const printWindow = window.open('', '_blank');
             printWindow.document.write(`
                 <html>
                     <head><title>Print QR Gabungan</title></head>
-                    <body style="margin:0; display:flex; justify-content:center; align-items:center; min-height:100vh; background:white;">
-                        <img src="${canvas.toDataURL('image/png')}" style="max-width:100%; height:auto;" />
+                    <body style="margin:0;display:flex;justify-content:center;align-items:center;min-height:100vh;background:white;">
+                        <img src="${canvas.toDataURL('image/png')}" style="max-width:100%;height:auto;" />
                     </body>
                 </html>
             `);
             printWindow.document.close();
-            
-            setTimeout(() => {
-                printWindow.print();
-            }, 300);
+            setTimeout(function(){ printWindow.print(); }, 300);
         }
 
         function openCombinedInNewTab() {
             const canvas = document.getElementById('combinedCanvas');
             if (!canvas) return;
-
             const dataUrl = canvas.toDataURL('image/png');
             const newTab = window.open();
             newTab.document.write(`
                 <html>
                     <head><title>QR Code + Teks</title></head>
-                    <body style="margin:0; background:#f8fafc; display:flex; justify-content:center; align-items:center; min-height:100vh;">
-                        <img src="${dataUrl}" style="max-width:95%; height:auto; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);" />
+                    <body style="margin:0;background:#f8fafc;display:flex;justify-content:center;align-items:center;min-height:100vh;">
+                        <img src="${dataUrl}" style="max-width:95%;height:auto;box-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1);" />
                     </body>
                 </html>
             `);
             newTab.document.close();
         }
 
+        // =====================================================
+        // SCANNER MODULE (dari cataku.html)
+        // =====================================================
+        const OCR_API_KEY = 'K84063513788957';
+        const PATTERN = /SPXID\d{12}/gi;
+
+        let scannerStream = null;
+
+        function openScanner() {
+            var overlay = document.getElementById('scannerOverlay');
+            overlay.classList.add('active');
+            var status = document.getElementById('scannerStatus');
+            status.textContent = 'Mengakses kamera...';
+            status.className = 'scanner-status active';
+            navigator.mediaDevices.getUserMedia({
+                video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } }
+            })
+            .then(function(stream) {
+                scannerStream = stream;
+                var video = document.getElementById('scannerVideo');
+                video.srcObject = stream;
+                status.textContent = 'Posisikan kode SPXID di dalam kotak, lalu tekan Jepret & Scan';
+            })
+            .catch(function(err) {
+                status.textContent = 'Gagal akses kamera: ' + err.message;
+                status.className = 'scanner-status';
+            });
+        }
+
+        function closeScanner() {
+            if (scannerStream) {
+                scannerStream.getTracks().forEach(function(t) { t.stop(); });
+                scannerStream = null;
+            }
+            document.getElementById('scannerOverlay').classList.remove('active');
+            var video = document.getElementById('scannerVideo');
+            video.srcObject = null;
+        }
+
+        document.getElementById('btnScanCapture').addEventListener('click', function() {
+            var video = document.getElementById('scannerVideo');
+            var w = video.videoWidth;
+            var h = video.videoHeight;
+            if (!w || !h) {
+                document.getElementById('scannerStatus').textContent = 'Kamera belum siap, tunggu sebentar';
+                return;
+            }
+            var flash = document.getElementById('scannerFlash');
+            flash.classList.remove('go');
+            void flash.offsetWidth;
+            flash.classList.add('go');
+            var canvas = document.getElementById('scanCaptureCanvas');
+            canvas.width = w;
+            canvas.height = h;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, w, h);
+            var dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+            var status = document.getElementById('scannerStatus');
+            status.textContent = 'Mengirim ke OCR...';
+            status.className = 'scanner-status active';
+            var body = new URLSearchParams();
+            body.append('apikey', OCR_API_KEY);
+            body.append('base64Image', dataUrl);
+            body.append('OCREngine', '2');
+            body.append('scale', 'true');
+            body.append('isOverlayRequired', 'false');
+            fetch('https://api.ocr.space/parse/image', {
+                method: 'POST',
+                body: body
+            })
+            .then(function(resp) { return resp.json(); })
+            .then(function(json) {
+                if (json.IsErroredOnProcessing) {
+                    var msg = (json.ErrorMessage && json.ErrorMessage[0]) || 'Gagal memproses';
+                    throw new Error(msg);
+                }
+                var text = (json.ParsedResults && json.ParsedResults[0] && json.ParsedResults[0].ParsedText) || '';
+                var matches = text.match(PATTERN) || [];
+                if (matches.length > 0) {
+                    var foundCode = matches[0].toUpperCase();
+                    document.getElementById('inputTeks').value = foundCode;
+                    generateQR();
+                    status.textContent = '✅ Ditemukan: ' + foundCode;
+                    status.className = 'scanner-status active';
+                    setTimeout(function() {
+                        closeScanner();
+                    }, 1500);
+                } else {
+                    status.textContent = '❌ Tidak ada kode SPXID yang terdeteksi. Coba lagi.';
+                    status.className = 'scanner-status';
+                }
+            })
+            .catch(function(err) {
+                status.textContent = 'Error: ' + err.message;
+                status.className = 'scanner-status';
+            });
+        });
+
+        // =====================================================
+        // INIT
+        // =====================================================
         function init() {
             createBackgroundWatermark();
-
-            // Default ukuran teks
             currentTextSize = 14;
-            document.getElementById('btnSedang').classList.add('active', 'border-blue-900');
-
-            // Event listener
-            const inputs = ['inputTeks', 'teksAtas', 'teksBawah'];
-            inputs.forEach(id => {
-                const el = document.getElementById(id);
+            document.getElementById('btnSedang').classList.add('active', 'bg-blue-900', 'text-white');
+            var inputs = ['inputTeks', 'teksAtas', 'teksBawah'];
+            inputs.forEach(function(id) {
+                var el = document.getElementById(id);
                 if (el) {
-                    el.addEventListener('input', () => {
+                    el.addEventListener('input', function() {
                         if (document.getElementById('inputTeks').value.trim()) {
                             generateQR();
                         }
                     });
                 }
             });
-
-            console.log('%c[QR Inventory] Versi tanpa logo + kontrol ukuran teks siap', 'color:#64748b');
+            // Add slider event
+            document.getElementById('textSizeSlider').addEventListener('input', setTextSizeFromSlider);
+            console.log('%c[QR Inventory] Dengan fitur Scan Missort terintegrasi', 'color:#059669;font-weight:bold');
         }
 
         window.onload = init;
