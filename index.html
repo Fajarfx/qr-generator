@@ -86,6 +86,7 @@
             word-break: break-word;
         }
 
+        /* Full Background Watermark */
         .bg-watermark {
             position: fixed;
             top: 0;
@@ -130,206 +131,20 @@
             z-index: 10;
         }
 
-        /* ===== SCANNER STYLES ===== */
-        .btn-scan-missort {
-            background: linear-gradient(135deg, #059669, #047857);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            white-space: nowrap;
-        }
-        .btn-scan-missort:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px -4px rgba(5, 150, 105, 0.4);
-        }
-        .btn-scan-missort i { font-size: 18px; }
-
-        .scanner-container {
-            display: none;
-            margin-top: 16px;
-            padding: 16px;
-            background: #0b1326;
-            border-radius: 16px;
-            border: 1px solid rgba(78, 222, 163, 0.2);
-        }
-        .scanner-container.active { display: block; }
-
-        .scanner-box {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 3/4;
-            border-radius: 12px;
-            overflow: hidden;
-            background: #000;
-        }
-        .scanner-box video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .scanner-box .scan-box {
-            position: absolute;
-            left: 10%;
-            right: 10%;
-            top: 35%;
-            bottom: 35%;
-            border: 2px solid #4edea3;
-            border-radius: 10px;
-            box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
-            pointer-events: none;
-        }
-        .scanner-box .hint {
-            position: absolute;
-            bottom: 12px;
-            left: 0;
-            right: 0;
-            text-align: center;
-            color: #fff;
-            font-size: 13px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-        }
-        .scanner-box .flash {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: #fff;
-            opacity: 0;
-            pointer-events: none;
-        }
-        .scanner-box .flash.go {
-            animation: flashpop 0.25s ease-out;
-        }
-        @keyframes flashpop {
-            0% { opacity: 0.85; }
-            100% { opacity: 0; }
-        }
-        .scanner-badge {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: rgba(0,0,0,0.6);
-            color: #4edea3;
-            font-size: 11px;
-            font-weight: 600;
-            padding: 4px 10px;
-            border-radius: 20px;
-            letter-spacing: 0.3px;
-        }
-        .scanner-controls {
-            display: flex;
-            gap: 12px;
-            margin-top: 12px;
-        }
-        .scanner-controls button {
-            flex: 1;
-            padding: 14px;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 15px;
-            cursor: pointer;
-            transition: transform 0.1s;
-        }
-        .scanner-controls button:active { transform: scale(0.97); }
-        .btn-scan-primary {
-            background: #4edea3;
-            color: #06140f;
-        }
-        .btn-scan-secondary {
-            background: rgba(255,255,255,0.1);
-            color: #fff;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-        .scanner-status {
-            color: #7d93a8;
-            font-size: 13px;
-            margin-top: 10px;
-            text-align: center;
-        }
-        .scanner-status.active { color: #4edea3; }
-        .scanner-status.success { color: #4edea3; }
-        .scanner-status.error { color: #ff6b6b; }
-
-        /* ===== HASIL SCAN ===== */
-        .scan-result {
-            display: none;
-            margin-top: 16px;
-            padding: 16px;
-            background: rgba(78, 222, 163, 0.08);
-            border: 1px solid rgba(78, 222, 163, 0.25);
-            border-radius: 12px;
-            text-align: center;
-        }
-        .scan-result.show { display: block; }
-        .scan-result .code {
-            font-size: 20px;
-            font-weight: 700;
-            color: #4edea3;
-            letter-spacing: 1px;
-            margin: 8px 0;
-            word-break: break-all;
-        }
-        .scan-result .qr-result {
-            display: inline-block;
-            background: white;
-            padding: 12px;
-            border-radius: 10px;
-            margin: 8px auto;
-        }
-        .scan-result .label {
-            font-size: 12px;
-            color: #7d93a8;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .scan-result .row-2 { display: flex; gap: 8px; margin-top: 12px; }
-        .scan-result .row-2 button { 
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-        }
-        .btn-copy-scan {
-            background: rgba(78, 222, 163, 0.2);
-            color: #4edea3;
-            border: 1px solid rgba(78, 222, 163, 0.3);
-        }
-        .btn-copy-scan:hover { background: rgba(78, 222, 163, 0.35); }
-        .btn-use-scan {
-            background: #4edea3;
-            color: #06140f;
-        }
-        .btn-use-scan:hover { background: #3ccb92; }
-        .btn-close-scan {
-            background: #ff6b6b;
-            color: white;
-        }
-        .btn-close-scan:hover { background: #e55555; }
-
         @media print {
             @page {
                 size: auto;
                 margin: 5mm;
             }
+
             body * {
                 visibility: hidden;
             }
+            
             #print-area, #print-area * {
                 visibility: visible;
             }
+            
             #print-area {
                 position: absolute;
                 left: 0;
@@ -338,22 +153,25 @@
                 display: flex;
                 justify-content: center;
             }
+
             .qr-container {
                 padding: 6px !important;
                 border: 1.5px solid #1e3a8a !important;
             }
+
             #qrcode canvas {
                 width: 125px !important;
                 height: 125px !important;
             }
+
             .text-above, .text-below {
                 font-size: 11px !important;
                 margin: 2px 0 !important;
             }
+
             .bg-watermark, .no-print {
                 display: none !important;
             }
-            .scanner-container { display: none !important; }
         }
     </style>
 </head>
@@ -366,21 +184,14 @@
         
         <!-- Header -->
         <div class="industrial-header rounded-3xl px-8 py-6 mb-8 text-white">
-            <div class="flex items-center justify-between flex-wrap gap-4">
+            <div class="flex items-center justify-between">
                 <div>
                     <h1 class="text-3xl font-display tracking-tight">QR CODE</h1>
                     <p class="text-blue-200 mt-1 text-sm font-medium">TIM C CONVEYOR</p>
                 </div>
-                <div class="flex items-center gap-3 flex-wrap">
-                    <div class="px-4 py-2 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center gap-2 text-sm">
-                        <i class="fa-solid fa-industry"></i>
-                        <span class="font-semibold">Team C</span>
-                    </div>
-                    <!-- TOMBOL SCAN MISSORT -->
-                    <button onclick="toggleScanner()" class="btn-scan-missort" id="btnToggleScanner">
-                        <i class="fa-solid fa-camera"></i>
-                        Scan Missort
-                    </button>
+                <div class="px-4 py-2 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center gap-2 text-sm">
+                    <i class="fa-solid fa-industry"></i>
+                    <span class="font-semibold">Team C</span>
                 </div>
             </div>
         </div>
@@ -403,7 +214,7 @@
                     <label class="label-text block mb-1.5">INPUT TEKS</label>
                     <textarea id="inputTeks" rows="3"
                            class="input-field w-full px-4 py-3 rounded-2xl text-lg font-semibold bg-white resize-y"
-                           placeholder="SPXID123456789012" oninput="generateQR()"></textarea>
+                           placeholder="ops........." oninput="generateQR()"></textarea>
                 </div>
 
                 <!-- Teks di Atas QR -->
@@ -483,43 +294,7 @@
                     </div>
                 </div>
 
-                <!-- ===== SCANNER CONTAINER ===== -->
-                <div class="scanner-container" id="scannerContainer">
-                    <div class="scanner-box">
-                        <video id="scannerVideo" autoplay playsinline muted></video>
-                        <div class="scan-box"></div>
-                        <div class="hint">Posisikan kode SPXID di dalam kotak</div>
-                        <div class="flash" id="scannerFlash"></div>
-                        <div class="scanner-badge">SCAN</div>
-                    </div>
-                    <div class="scanner-controls">
-                        <button class="btn-scan-secondary" onclick="closeScanner()">
-                            <i class="fa-solid fa-times"></i> Tutup
-                        </button>
-                        <button class="btn-scan-primary" id="btnScanCapture">
-                            <i class="fa-solid fa-camera"></i> Jepret & Scan
-                        </button>
-                    </div>
-                    <div class="scanner-status" id="scannerStatus">Tekan "Jepret & Scan" untuk mengambil foto</div>
-
-                    <!-- ===== HASIL SCAN (QR + TEKS) ===== -->
-                    <div class="scan-result" id="scanResult">
-                        <div class="label">✅ KODE TERDETEKSI</div>
-                        <div class="code" id="resultCode">SPXID123456789012</div>
-                        <div class="qr-result" id="qrResult"></div>
-                        <div class="row-2">
-                            <button class="btn-copy-scan" onclick="copyScanResult()">
-                                <i class="fa-regular fa-copy"></i> Salin
-                            </button>
-                            <button class="btn-use-scan" onclick="useScanResult()">
-                                <i class="fa-regular fa-check-circle"></i> Gunakan
-                            </button>
-                            <button class="btn-close-scan" onclick="closeScanner()">
-                                <i class="fa-regular fa-times"></i> Tutup
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                
 
                 <!-- Tombol Preview Gabungan -->
                 <div class="mt-4">
@@ -573,12 +348,7 @@
         </div>
     </div>
 
-    <canvas id="capture-canvas" style="display:none;"></canvas>
-
     <script>
-        // =====================================================
-        // QR INVENTORY CORE
-        // =====================================================
         let qrcodeInstance = null;
         let currentTextSize = 14;
 
@@ -652,6 +422,7 @@
             const belowEl = document.getElementById('textBelow');
             const slider = document.getElementById('textSizeSlider');
 
+            // Reset active button
             document.getElementById('btnKecil').classList.remove('active', 'border-blue-900');
             document.getElementById('btnSedang').classList.remove('active', 'border-blue-900');
             document.getElementById('btnBesar').classList.remove('active', 'border-blue-900');
@@ -684,6 +455,7 @@
             aboveEl.style.fontSize = currentTextSize + 'px';
             belowEl.style.fontSize = currentTextSize + 'px';
 
+            // Update active button
             document.getElementById('btnKecil').classList.remove('active', 'border-blue-900');
             document.getElementById('btnSedang').classList.remove('active', 'border-blue-900');
             document.getElementById('btnBesar').classList.remove('active', 'border-blue-900');
@@ -714,6 +486,7 @@
 
         // ==================== HELPER: WRAP TEXT ON CANVAS ====================
         function measureWrappedText(ctx, text, maxWidth) {
+            // Split by newlines first, then wrap each line by word
             const hardLines = text.split('\n');
             const allLines = [];
             hardLines.forEach(line => {
@@ -743,6 +516,7 @@
         }
 
         function calcCanvasWidth(ctx, textAbove, textBelow, qrWidth, padding) {
+            // Canvas width = max of (QR width, text widths) + padding*2
             let maxTextWidth = 0;
             if (textAbove) {
                 const w = ctx.measureText(textAbove.split('\n').reduce((a,b) => a.length > b.length ? a : b)).width;
@@ -775,9 +549,11 @@
 
             ctx.font = `bold ${currentTextSize}px Inter, system-ui, sans-serif`;
 
+            // Hitung lebar canvas agar teks tidak terpotong
             const canvasWidth = calcCanvasWidth(ctx, textAbove, textBelow, qrCanvas.width, padding);
             const textMaxWidth = canvasWidth - padding * 2;
 
+            // Pre-calculate tinggi teks
             let aboveLines = textAbove ? measureWrappedText(ctx, textAbove, textMaxWidth) : [];
             let belowLines = textBelow ? measureWrappedText(ctx, textBelow, textMaxWidth) : [];
 
@@ -788,6 +564,7 @@
             finalCanvas.width = canvasWidth;
             finalCanvas.height = totalHeight;
 
+            // Set font lagi setelah resize canvas (canvas resize reset context)
             ctx.fillStyle = "#ffffff";
             ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
             ctx.font = `bold ${currentTextSize}px Inter, system-ui, sans-serif`;
@@ -841,9 +618,11 @@
 
             ctx.font = `bold ${currentTextSize}px Inter, system-ui, sans-serif`;
 
+            // Hitung lebar canvas agar teks tidak terpotong
             const canvasWidth = calcCanvasWidth(ctx, textAbove, textBelow, qrCanvas.width, padding);
             const textMaxWidth = canvasWidth - padding * 2;
 
+            // Pre-calculate tinggi teks
             let aboveLines = textAbove ? measureWrappedText(ctx, textAbove, textMaxWidth) : [];
             let belowLines = textBelow ? measureWrappedText(ctx, textBelow, textMaxWidth) : [];
 
@@ -854,6 +633,7 @@
             canvas.width = canvasWidth;
             canvas.height = totalHeight;
 
+            // Set font lagi setelah resize canvas
             ctx.fillStyle = "#ffffff";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.font = `bold ${currentTextSize}px Inter, system-ui, sans-serif`;
@@ -874,7 +654,10 @@
                 drawWrappedText(ctx, textBelow, canvas.width / 2, currentY + currentTextSize, textMaxWidth, lineHeight);
             }
 
+            // Tampilkan section
             document.getElementById('combinedPreviewSection').classList.remove('hidden');
+            
+            // Scroll ke section
             document.getElementById('combinedPreviewSection').scrollIntoView({ behavior: 'smooth' });
         }
 
@@ -897,6 +680,7 @@
             const canvas = document.getElementById('combinedCanvas');
             if (!canvas) return;
 
+            // Buka window baru untuk print
             const printWindow = window.open('', '_blank');
             printWindow.document.write(`
                 <html>
@@ -930,185 +714,14 @@
             newTab.document.close();
         }
 
-        // =====================================================
-        // SCANNER MODULE (dalam halaman yang sama)
-        // =====================================================
-        const OCR_API_KEY = 'K84063513788957';
-        const PATTERN = /SPXID\d{12}/gi;
-
-        let scannerStream = null;
-        let lastScannedCode = '';
-
-        function toggleScanner() {
-            const container = document.getElementById('scannerContainer');
-            const btn = document.getElementById('btnToggleScanner');
-            
-            if (container.classList.contains('active')) {
-                closeScanner();
-                btn.innerHTML = '<i class="fa-solid fa-camera"></i> Scan Missort';
-            } else {
-                container.classList.add('active');
-                btn.innerHTML = '<i class="fa-solid fa-times"></i> Tutup Scanner';
-                startScannerCamera();
-            }
-        }
-
-        function startScannerCamera() {
-            const video = document.getElementById('scannerVideo');
-            const status = document.getElementById('scannerStatus');
-            
-            status.textContent = 'Mengakses kamera...';
-            status.className = 'scanner-status active';
-            
-            navigator.mediaDevices.getUserMedia({
-                video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } }
-            })
-            .then(function(stream) {
-                scannerStream = stream;
-                video.srcObject = stream;
-                status.textContent = 'Posisikan kode SPXID di dalam kotak, lalu tekan Jepret & Scan';
-            })
-            .catch(function(err) {
-                status.textContent = '❌ Gagal akses kamera: ' + err.message;
-                status.className = 'scanner-status error';
-            });
-        }
-
-        function closeScanner() {
-            if (scannerStream) {
-                scannerStream.getTracks().forEach(function(t) { t.stop(); });
-                scannerStream = null;
-            }
-            document.getElementById('scannerContainer').classList.remove('active');
-            document.getElementById('btnToggleScanner').innerHTML = '<i class="fa-solid fa-camera"></i> Scan Missort';
-            document.getElementById('scannerVideo').srcObject = null;
-            document.getElementById('scanResult').classList.remove('show');
-        }
-
-        document.getElementById('btnScanCapture').addEventListener('click', function() {
-            const video = document.getElementById('scannerVideo');
-            const w = video.videoWidth;
-            const h = video.videoHeight;
-            
-            if (!w || !h) {
-                document.getElementById('scannerStatus').textContent = 'Kamera belum siap, tunggu sebentar';
-                return;
-            }
-            
-            // Flash effect
-            const flash = document.getElementById('scannerFlash');
-            flash.classList.remove('go');
-            void flash.offsetWidth;
-            flash.classList.add('go');
-            
-            // Capture
-            const canvas = document.getElementById('capture-canvas');
-            canvas.width = w;
-            canvas.height = h;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(video, 0, 0, w, h);
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
-            
-            const status = document.getElementById('scannerStatus');
-            status.textContent = 'Mengirim ke OCR...';
-            status.className = 'scanner-status active';
-            
-            // Kirim ke OCR
-            const body = new URLSearchParams();
-            body.append('apikey', OCR_API_KEY);
-            body.append('base64Image', dataUrl);
-            body.append('OCREngine', '2');
-            body.append('scale', 'true');
-            body.append('isOverlayRequired', 'false');
-            
-            fetch('https://api.ocr.space/parse/image', {
-                method: 'POST',
-                body: body
-            })
-            .then(function(resp) { return resp.json(); })
-            .then(function(json) {
-                if (json.IsErroredOnProcessing) {
-                    var msg = (json.ErrorMessage && json.ErrorMessage[0]) || 'Gagal memproses';
-                    throw new Error(msg);
-                }
-                
-                var text = (json.ParsedResults && json.ParsedResults[0] && json.ParsedResults[0].ParsedText) || '';
-                var matches = text.match(PATTERN) || [];
-                
-                if (matches.length > 0) {
-                    lastScannedCode = matches[0].toUpperCase();
-                    
-                    // TAMPILKAN QR + TEKS DI BAWAH KAMERA
-                    document.getElementById('resultCode').textContent = lastScannedCode;
-                    
-                    // Generate QR di hasil
-                    const qrContainer = document.getElementById('qrResult');
-                    qrContainer.innerHTML = '';
-                    new QRCode(qrContainer, {
-                        text: lastScannedCode,
-                        width: 160,
-                        height: 160,
-                        colorDark: "#000000",
-                        colorLight: "#ffffff",
-                        correctLevel: QRCode.CorrectLevel.H
-                    });
-                    
-                    document.getElementById('scanResult').classList.add('show');
-                    status.textContent = '✅ Ditemukan: ' + lastScannedCode;
-                    status.className = 'scanner-status success';
-                    
-                    // Matikan kamera
-                    if (scannerStream) {
-                        scannerStream.getTracks().forEach(function(t) { t.stop(); });
-                        scannerStream = null;
-                    }
-                    
-                } else {
-                    status.textContent = '❌ Tidak ada kode SPXID yang terdeteksi. Coba lagi.';
-                    status.className = 'scanner-status error';
-                }
-            })
-            .catch(function(err) {
-                status.textContent = '❌ Error: ' + err.message;
-                status.className = 'scanner-status error';
-            });
-        });
-
-        // ===== FUNGSI HASIL SCAN =====
-        function copyScanResult() {
-            if (!lastScannedCode) return;
-            navigator.clipboard.writeText(lastScannedCode).then(function() {
-                alert('📋 Tersalin: ' + lastScannedCode);
-            }).catch(function() {
-                alert('Salin manual: ' + lastScannedCode);
-            });
-        }
-
-        function useScanResult() {
-            if (!lastScannedCode) return;
-            
-            // Isi ke input teks
-            document.getElementById('inputTeks').value = lastScannedCode;
-            
-            // Generate QR
-            generateQR();
-            
-            // Tutup scanner
-            closeScanner();
-            
-            // Notifikasi
-            alert('✅ Kode ' + lastScannedCode + ' berhasil digunakan!');
-        }
-
-        // =====================================================
-        // INIT
-        // =====================================================
         function init() {
             createBackgroundWatermark();
 
+            // Default ukuran teks
             currentTextSize = 14;
             document.getElementById('btnSedang').classList.add('active', 'border-blue-900');
 
+            // Event listener
             const inputs = ['inputTeks', 'teksAtas', 'teksBawah'];
             inputs.forEach(id => {
                 const el = document.getElementById(id);
@@ -1121,7 +734,7 @@
                 }
             });
 
-            console.log('%c[QR Inventory] Dengan fitur Scan Missort terintegrasi', 'color:#059669;font-weight:bold');
+            console.log('%c[QR Inventory] Versi tanpa logo + kontrol ukuran teks siap', 'color:#64748b');
         }
 
         window.onload = init;
