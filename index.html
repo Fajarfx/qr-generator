@@ -483,7 +483,7 @@
                     </div>
                 </div>
 
-                <!-- ===== SCANNER CONTAINER (dalam halaman) ===== -->
+                <!-- ===== SCANNER CONTAINER ===== -->
                 <div class="scanner-container" id="scannerContainer">
                     <div class="scanner-box">
                         <video id="scannerVideo" autoplay playsinline muted></video>
@@ -502,7 +502,7 @@
                     </div>
                     <div class="scanner-status" id="scannerStatus">Tekan "Jepret & Scan" untuk mengambil foto</div>
 
-                    <!-- Hasil Scan -->
+                    <!-- ===== HASIL SCAN (QR + TEKS) ===== -->
                     <div class="scan-result" id="scanResult">
                         <div class="label">✅ KODE TERDETEKSI</div>
                         <div class="code" id="resultCode">SPXID123456789012</div>
@@ -1038,7 +1038,7 @@
                 if (matches.length > 0) {
                     lastScannedCode = matches[0].toUpperCase();
                     
-                    // Tampilkan hasil
+                    // TAMPILKAN QR + TEKS DI BAWAH KAMERA
                     document.getElementById('resultCode').textContent = lastScannedCode;
                     
                     // Generate QR di hasil
